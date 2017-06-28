@@ -1,5 +1,6 @@
 package com.twigsoftwares.customcamera.customcamera;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import com.github.florent37.camerafragment.CameraFragmentApi;
 import com.github.florent37.camerafragment.configuration.Configuration;
 import com.github.florent37.camerafragment.listeners.CameraFragmentControlsAdapter;
 import com.github.florent37.camerafragment.listeners.CameraFragmentResultAdapter;
+import com.github.florent37.camerafragment.listeners.CameraFragmentResultListener;
 import com.github.florent37.camerafragment.listeners.CameraFragmentStateAdapter;
 import com.github.florent37.camerafragment.listeners.CameraFragmentVideoRecordTextAdapter;
 import com.github.florent37.camerafragment.widgets.CameraSettingsView;
@@ -39,6 +41,8 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -183,25 +187,25 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         final CameraFragment cameraFragment = CameraFragment.newInstance(new Configuration.Builder()
-                .setCamera(Configuration.CAMERA_FACE_REAR).build());
+                .setCamera(Configuration.CAMERA_FACE_REAR).setVideoDuration(5000).build());
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content, cameraFragment, FRAGMENT_TAG)
                 .commitAllowingStateLoss();
 
         if (cameraFragment != null) {
-            //cameraFragment.setResultListener(new CameraFragmentResultListener() {
-            //    @Override
-            //    public void onVideoRecorded(String filePath) {
-            //        Intent intent = PreviewActivity.newIntentVideo(MainActivity.this, filePath);
-            //        startActivityForResult(intent, REQUEST_PREVIEW_CODE);
-            //    }
+            cameraFragment.setResultListener(new CameraFragmentResultListener() {
+                @Override
+                public void onVideoRecorded(String filePath) {
+                    Intent intent = com.github.florent37.camerafragment.PreviewActivity.newIntentVideo(MainActivity.this, filePath);
+                    startActivityForResult(intent, REQUEST_PREVIEW_CODE);
+                }
 //
-            //    @Override
-            //    public void onPhotoTaken(byte[] bytes, String filePath) {
-            //        Intent intent = PreviewActivity.newIntentPhoto(MainActivity.this, filePath);
-            //        startActivityForResult(intent, REQUEST_PREVIEW_CODE);
-            //    }
-            //});
+                @Override
+                public void onPhotoTaken(byte[] bytes, String filePath) {
+                    Intent intent = com.github.florent37.camerafragment.PreviewActivity.newIntentPhoto(MainActivity.this, filePath);
+                    startActivityForResult(intent, REQUEST_PREVIEW_CODE);
+                }
+            });
 
             cameraFragment.setStateListener(new CameraFragmentStateAdapter() {
 
